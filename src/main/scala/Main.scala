@@ -1,7 +1,6 @@
 import org.apache.spark.{SparkConf, SparkContext}
 
 object Main extends App {
-
   println("Hello, bachelor! :)")
 
   val conf = new SparkConf().setMaster("local").setAppName("spark-playground")
