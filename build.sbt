@@ -1,4 +1,5 @@
 import Dependencies._
+import sbt.Keys._
 
 lazy val buildSettings = Seq(
   name := "spark-playground",
@@ -8,8 +9,11 @@ lazy val buildSettings = Seq(
 
 lazy val coreLibs = Seq(sparkCore)
 
+lazy val utils = Seq(logback, logbackColorizer)
+
 lazy val root = (project in file("."))
   .settings(buildSettings: _*)
   .settings(
-    libraryDependencies ++= coreLibs
+    libraryDependencies ++= (coreLibs ++ utils)
+    .map(_.exclude("org.slf4j", "slf4j-log4j12"))
   )
