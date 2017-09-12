@@ -1,24 +1,9 @@
 package domain
 
-case class Drawing(key_id: String,
-                   countrycode: String,
-                   timestamp: String,
-                   drawing: Array[Array[Array[Double]]],
-                   recognized: Boolean,
-                   word: String) {
-  def simplify: SimplifiedDrawing = {
-    SimplifiedDrawing(fromStrokes(drawing), word)
-  }
+import org.apache.spark.ml.linalg.Vectors
 
-  private def fromStrokes(strokes: Array[Array[Array[Double]]]): Array[Array[Int]] = {
-    val a = Array.ofDim[Int](256, 256)
+case class Drawing(drawing: Array[Double], word: String) {
 
-    strokes.foreach(stroke => {
-      for ((x, y) <- stroke(0) zip stroke(1)) {
-        a(x.toInt)(y.toInt) = 1
-      }
-    })
+  def toDataFrame: DrawingDF = DrawingDF(Vectors.dense(drawing), DrawingDF.wordToLabel(word))
 
-    a
-  }
 }
