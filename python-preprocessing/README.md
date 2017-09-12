@@ -14,4 +14,4 @@ In order to run this application you need to follow these steps:
 - Run `Python` script via `python main.py` or through IDE. 
 
 Additional configuration is where your **generated files** will be stored (_default_ path is under `python-processing` directory in `data` directory). Like we said earlier - it will generate both `train` and `test` data in ratio **80:20**. 
-Also, you can setup **maximum number of generated values** for each **class** where _default_ value is **1000**.
+Also, you can setup **maximum number of generated values** for each **class** where _default_ value is **10000**.

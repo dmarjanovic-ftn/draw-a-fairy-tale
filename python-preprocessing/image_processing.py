@@ -6,7 +6,7 @@ import numpy as np
 
 class ImageProcessing(object):
 
-    def __init__(self, data_path='quick_draw_data', processed='data', max_class_data=1000, generate_images=False, binarized=False):
+    def __init__(self, data_path='quick_draw_data', processed='data', max_class_data=10000, generate_images=False, binarized=False):
         self.max_class_data = max_class_data
         self._root_data = data_path
         self._processed = processed

@@ -3,7 +3,7 @@ from utils import get_class_name
 
 if __name__ == "__main__":
 
-    processing = ImageProcessing(generate_images=True)
+    processing = ImageProcessing()
 
     classes = processing.get_files()
     for c in classes:
