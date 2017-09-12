@@ -2,7 +2,8 @@ from image_processing import ImageProcessing
 from utils import get_class_name
 
 if __name__ == "__main__":
-    processing = ImageProcessing()
+
+    processing = ImageProcessing(generate_images=True)
 
     classes = processing.get_files()
     for c in classes:
@@ -10,8 +11,9 @@ if __name__ == "__main__":
         numpy_data = processing.load_images(c)
         data_no = len(numpy_data)
 
-        print "Processing " + class_name + "..."
+        if data_no > 0:
+            print "Processing " + class_name + "..."
 
-        # Generate only 1000 images
-        for i in xrange(min(1000, data_no)):
-            processing.save_image(class_name + ' ' + str(i), numpy_data[i])
+        # Generate only maximum 'max_class_data' images
+        for i in xrange(min(processing.max_class_data, data_no)):
+            processing.save_image(name=class_name, index=i, array=numpy_data[i])
