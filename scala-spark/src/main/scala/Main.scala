@@ -1,3 +1,4 @@
+import domain.Drawing
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SparkSession
 
@@ -16,13 +17,19 @@ object Main extends App {
     .json("/Users/dmarjanovic/Downloads/test.json")
     .as[Drawing]
 
-  file.createOrReplaceTempView("drawings")
-
-  sparkSession
-    .sql("SELECT drawing, word FROM drawings WHERE recognized = true")
-    .map(d => s"${d.get(0)}; ${d.get(1)}")
+  file.map(_.simplify)
     .collect()
-    .foreach(println)
+    .foreach(simplified => {
+      simplified.picture.foreach(a => println(a.toList))
+    })
+
+//  file.createOrReplaceTempView("drawings")
+//
+//  sparkSession
+//    .sql("SELECT drawing, word FROM drawings WHERE recognized = true")
+//    .map(d => s"${d.get(0)}; ${d.get(1)}")
+//    .collect()
+//    .foreach(println)
 
   sc.stop()
 }

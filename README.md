@@ -30,7 +30,7 @@ Everything you need to do is to download and setup **Java** and **Scala** to you
 
     If you check again at `http://localhost:8080` you'll able to see your **workers** also. You can add special _flags_ such as `MEMORY`, `CORES_TO_USE`, etc. But, let's stick to _default_ again.
     
-4. Also, you can run `./bin/stop-all.sh` to **stop** both _master_ and _slaves_ and `./bin/start-all.sh` to start both _master_ and _slaves_.
+4. Also, you can run `./sbin/stop-all.sh` to **stop** both _master_ and _slaves_ and `./sbin/start-all.sh` to start both _master_ and _slaves_.
 
 ### Run Scala Spark Application in Cluster
 
