@@ -10,9 +10,19 @@ object DrawingDF {
     "apple",
     "bat",
     "clock",
+    "crocodile",
     "crown",
+    "envelope",
     "face",
-    "lion"
+    "frog",
+    "guitar",
+    "key",
+    "lion",
+    "mushroom",
+    "nose",
+    "pizza",
+    "saxophone",
+    "skull"
   )
 
   def wordToLabel(word: String): Int = Labels.indexOf(word.toLowerCase)

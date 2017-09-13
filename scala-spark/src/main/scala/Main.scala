@@ -3,6 +3,8 @@ import org.apache.spark.ml.classification.MultilayerPerceptronClassificationMode
 import org.apache.spark.sql.{Dataset, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 
+import DrawingDF.Labels
+
 object Main extends App {
 
   val conf = new SparkConf().setAppName("draw-a-fairy-tale")
@@ -21,7 +23,7 @@ object Main extends App {
   val (train, test) = reader.split(data, Array(0.8, 0.2))
 
   val nn = new NeuralNetwork(
-    layers = Array(784, 5, 4, 8),
+    layers = Array(784, 56, 32, 12, Labels.size),
     maxIterations = 100
   )
 
