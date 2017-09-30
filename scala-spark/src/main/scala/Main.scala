@@ -23,7 +23,7 @@ object Main extends App {
   val (train, test) = reader.split(data, Array(0.8, 0.2))
 
   val nn = new NeuralNetwork(
-    layers = Array(784, 56, 32, 12, Labels.size),
+    layers = Array(784, 387, Labels.size),
     maxIterations = 100
   )
 

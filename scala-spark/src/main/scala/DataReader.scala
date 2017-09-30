@@ -14,10 +14,8 @@ class DataReader(session: SparkSession, path: String) {
       .map(_.toDataFrame)
   }
 
-  def split(dataset: Dataset[DrawingDF], ratio: Ratio): SplittedDataset = {
-    val splitted = dataset.randomSplit(ratio, seed = Random.nextLong())
-
-    (splitted(0), splitted(1))
+  def split(dataset: Dataset[DrawingDF], ratio: Ratio): Array[Dataset[DrawingDF]] = {
+    dataset.randomSplit(ratio, seed = Random.nextLong())
   }
 
   type SplittedDataset = (Dataset[DrawingDF], Dataset[DrawingDF])
