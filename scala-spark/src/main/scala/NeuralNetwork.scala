@@ -31,4 +31,6 @@ class NeuralNetwork(layers: Array[Int], maxIterations: Int, blockSize: Int = 128
 
 object NeuralNetwork {
   val MetricAccuracy: String = "accuracy"
+  val MetricFMeasure: String = "f1"
+  val MetricRecall: String = "weightedRecall"
 }
