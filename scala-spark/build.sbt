@@ -7,7 +7,7 @@ lazy val buildSettings = Seq(
   scalaVersion := "2.11.8"
 )
 
-lazy val coreLibs = Seq(sparkCore, sparkSQL)
+lazy val coreLibs = Seq(sparkCore, sparkSQL, sparkMLLib)
 
 lazy val utils = Seq(logback, logbackColorizer)
 
