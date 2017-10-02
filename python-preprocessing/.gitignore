@@ -1,0 +1,9 @@
+# IDE and OS specific
+.DS_Store
+.env
+.idea/
+
+*.pyc
+
+quick_draw_data/
+data/

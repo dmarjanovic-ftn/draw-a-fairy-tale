@@ -1,0 +1,15 @@
+<configuration>
+    <property scope="context" name="COLORIZER_COLORS" value="red@,green@,blue@,cyan@,white@" />
+    <conversionRule conversionWord="colorize" converterClass="org.tuxdude.logback.extensions.LogColorizer" />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date{HH:mm:ss} %colorize(%-6level) %logger{0} {%class %method} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="ERROR">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
