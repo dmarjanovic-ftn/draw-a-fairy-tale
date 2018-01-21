@@ -11,61 +11,30 @@ object Main extends App {
   val conf = new SparkConf().setAppName("draw-a-fairy-tale")
   val sc = new SparkContext(conf)
 
+  sc.hadoopConfiguration.set("fs.s3n.impl","org.apache.hadoop.fs.s3native.NativeS3FileSystem")
+  sc.hadoopConfiguration.set("fs.s3n.awsAccessKeyId", System.getenv("AWS_ACCESS_KEY_ID"))
+  sc.hadoopConfiguration.set("fs.s3n.awsSecretAccessKey", System.getenv("AWS_SECRET_ACCESS_KEY"))
+
   val sparkSession = SparkSession
     .builder()
     .getOrCreate()
 
-    val models = Seq(
-      Array(784, 200, 100, 30, Labels.size),
-      Array(784, 500, 200, 100, Labels.size),
-      Array(784, 300, 100, 50, Labels.size),
-      Array(784, 200, 100, Labels.size),
-      Array(784, 400, 200, Labels.size)
-    )
-
-    val kFoldCrossValidator = new KFoldCrossValidation(
-      k = 10,
-      path = "/Users/dmarjanovic/Desktop/draw-a-fairy-tale/python-preprocessing/data/k-fold/",
-      session = sparkSession
-    )
-
-    val result = kFoldCrossValidator.evaluateWith(models)
-    logger.info(s"Results gained by cross-validation: $result")
-
-    val bestModelIndex = result.indices.maxBy(result)
-    val bestModel = models(bestModelIndex)
-    logger.info(s"Best model is $bestModel")
+    val layers = Array(784, 200, 100, 30, Labels.size)
 
   // Read train set along with validation set
   val trainSet = new DataReader(
     session = sparkSession,
-    path = s"/Users/dmarjanovic/Desktop/draw-a-fairy-tale/python-preprocessing/data/k-fold/*_0.json"
+    path = System.getenv("DATA_PATH_URL")
   ).read
 
   // Train neural network
   val nn = new NeuralNetwork(
-    layers = bestModel,
+    layers = layers,
     maxIterations = 100
   )
 
   val model: MultilayerPerceptronClassificationModel = nn.fit(trainSet)
-
-  // Read test set
-  val testSet = new DataReader(
-    session = sparkSession,
-    path = "/Users/dmarjanovic/Desktop/draw-a-fairy-tale/python-preprocessing/data/processed/test.json"
-  ).read
-
-  // Predictions on test dataset
-  val predictions = nn.predictOnModel(model, testSet)
-
-  // Evaluate results
-  val accuracy = nn.evaluateWith(NeuralNetwork.MetricAccuracy, predictions)
-  println(s"Accuracy on test set is $accuracy")
-  val recall = nn.evaluateWith(NeuralNetwork.MetricRecall, predictions)
-  println(s"Recall on test set is $recall")
-  val f1 = nn.evaluateWith(NeuralNetwork.MetricFMeasure, predictions)
-  println(s"F1 measure on test set is $f1")
+ println(s"Successfully evaluated model $model.")
 
   sc.stop()
 }
