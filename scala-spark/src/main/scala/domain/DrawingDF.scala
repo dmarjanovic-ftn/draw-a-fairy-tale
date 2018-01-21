@@ -2,21 +2,23 @@ package domain
 
 import org.apache.spark.ml.linalg.Vector
 
-case class DrawingDF(features: Vector, label: Int)
+final case class DrawingDF(features: Vector, label: Int)
 
 object DrawingDF {
 
   val Labels: Seq[String] = Seq(
-    "cello",
-    "clarinet",
-    "drums",
-    "guitar",
-    "harp",
-    "piano",
-    "saxophone",
-    "trombone",
-    "trumpet",
-    "violin"
+    "aircraft_carrier",
+    "airplane",
+    "alarm_clock",
+    "ambulance",
+    "angel",
+    "animal_migration",
+    "ant",
+    "anvil",
+    "apple",
+    "arm",
+    "asparagus",
+    "axe"
   )
 
   def wordToLabel(word: String): Int = Labels.indexOf(word.toLowerCase)
