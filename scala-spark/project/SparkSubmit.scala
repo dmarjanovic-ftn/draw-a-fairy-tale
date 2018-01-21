@@ -5,7 +5,7 @@ object SparkSubmit {
     SparkSubmitSetting("spark",
       Seq(
         "--class", "Main",
-        "--master", "spark://dmarjanovic-mbp.local:7077"
+        "--master", System.getenv("SPARK_MASTER_URL")
       )
     )
 }
