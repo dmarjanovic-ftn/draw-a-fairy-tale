@@ -3,7 +3,8 @@ from utils import get_class_name
 
 if __name__ == "__main__":
 
-    processing = ImageProcessing(max_class_data=1000, train_data=800, binarized=True)
+    processing = ImageProcessing(max_class_data=1000, train_data=800, binarized=True, generate_images=False,
+                                 init_dirs=True)
 
     classes = processing.get_files()
     for c in classes:

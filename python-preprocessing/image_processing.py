@@ -1,18 +1,29 @@
-from utils import get_file_names_from_directory, to_bitmap
-from scipy.misc import imsave
 import json
+from os import makedirs
+from shutil import rmtree
+
 import numpy as np
+from scipy.misc import imsave
+
+from utils import get_file_names_from_directory, to_bitmap
 
 
 class ImageProcessing(object):
     def __init__(self, data_path='quick_draw_data', processed='data', max_class_data=10000,
-                 generate_images=False, train_data=8000, binarized=False):
+                 generate_images=False, train_data=8000, binarized=False, init_dirs=False):
         self.max_class_data = max_class_data
         self.train_data = train_data
         self._root_data = data_path
         self._processed = processed
         self._generate_images = generate_images
         self._binarized = binarized
+        if init_dirs:
+            self.init_data_dirs()
+
+    def init_data_dirs(self):
+        rmtree(self._processed)
+        for leaf_dir in ['/processed', '/test', '/train', '/k-fold']:
+            makedirs(self._processed + leaf_dir)
 
     def get_files(self):
         return get_file_names_from_directory(self._root_data)
@@ -44,20 +55,20 @@ class ImageProcessing(object):
             })
 
             if is_test:
-                with open(self._processed + '/processed/test.json', "a") as f:
+                with open(self._processed + '/processed/test.json', 'a+') as f:
                     f.write(drawing + '\n')
             else:
-                with open(self._processed + '/processed/' + name + '.json', "a") as f:
+                with open(self._processed + '/processed/' + name + '.json', 'a+') as f:
                     f.write(drawing + '\n')
 
     def to_k_fold_sets(self, k=10, set_names=None):
         validation_data = self.train_data / k
         for i in xrange(k):
-            train_file = open(self._processed + '/k-fold/train_' + str(i) + '.json', "w")
-            validation_file = open(self._processed + '/k-fold/validation_' + str(i) + '.json', "w")
+            train_file = open(self._processed + '/k-fold/train_' + str(i) + '.json', 'w')
+            validation_file = open(self._processed + '/k-fold/validation_' + str(i) + '.json', 'w')
 
             for name in set_names:
-                with open(self._processed + '/processed/' + name + '.json') as f:
+                with open(self._processed + '/processed/' + name + '.json', 'r') as f:
                     lines = f.readlines()
                     for (index, line) in zip(xrange(len(lines)), lines):
                         if i * validation_data < index <= (i + 1) * validation_data:
