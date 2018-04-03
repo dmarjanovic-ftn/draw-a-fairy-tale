@@ -36,25 +36,25 @@ object FairytaleCNN {
   val log: Logger = LoggerFactory.getLogger(getClass)
 
   // train set characteristics
-  val numExamples: Int = 200000
-  val numLabels: Int = 10
-  val batchSize: Int = 1000
-  val splitTrainTest: Double = 0.8
+  val NumExamples: Int = 200000
+  val NumLabels: Int = 10
+  val BatchSize: Int = 1000
+  val SplitTrainTest: Double = 0.8
 
-  val useSparkLocal: Boolean = true
+  val UseSparkLocal: Boolean = true
 
   // image parameters
-  val imgHeight: Int = 28
-  val imgWidth: Int = 28
-  val imgChannels: Int = 1
+  val ImgHeight: Int = 28
+  val ImgWidth: Int = 28
+  val ImgChannels: Int = 1
 
   // random setup
-  val seed: Long = 42
-  val random: Random = new Random(seed)
+  val Seed: Long = 42
+  val RandomGenerator: Random = new Random(Seed)
 
   // NN params
-  val epochs: Int = 4
-  val iterations: Int = 1
+  val Epochs: Int = 100
+  val Iterations: Int = 4
 
   def main(args: Array[String]): Unit = {
     new FairytaleCNN().run()
@@ -69,8 +69,8 @@ class FairytaleCNN {
   def run(): Unit = {
 
     val sparkConf = new SparkConf
-    if (useSparkLocal) {
-      sparkConf.setMaster("local[*]")
+    if (UseSparkLocal) {
+      sparkConf.setMaster(System.getenv("CNN_SPARK_MASTER"))
     }
 
     sparkConf.setAppName("CNN Draw a fairytale")
@@ -81,27 +81,27 @@ class FairytaleCNN {
 
     val labelMaker = new ParentPathLabelGenerator
     val rootPath = new File(System.getenv("CNN_DATA_ROOT_PATH_URL"))
-    val fileSplit = new FileSplit(rootPath, NativeImageLoader.ALLOWED_FORMATS, random)
-    val pathFilter = new BalancedPathFilter(random, labelMaker, numExamples, numLabels, batchSize)
+    val fileSplit = new FileSplit(rootPath, NativeImageLoader.ALLOWED_FORMATS, RandomGenerator)
+    val pathFilter = new BalancedPathFilter(RandomGenerator, labelMaker, NumExamples, NumLabels, BatchSize)
 
     // define train and test split
     val inputSplit: Array[InputSplit] = fileSplit.sample(
       pathFilter,
-      numExamples * (1 + splitTrainTest),
-      numExamples * (1 - splitTrainTest)
+      NumExamples * (1 + SplitTrainTest),
+      NumExamples * (1 - SplitTrainTest)
     )
     val trainDataSplit: InputSplit = inputSplit(0)
     val testDataSplit: InputSplit = inputSplit(1)
     log.debug(s"Train: ${trainDataSplit.length}, Test: ${testDataSplit.length}")
 
 
-    val trainData = prepareReadAndScale(trainDataSplit, labelMaker, batchSize, numLabels)
+    val trainData = prepareReadAndScale(trainDataSplit, labelMaker, BatchSize, NumLabels)
     val trainDataSpark = sparkContext.parallelize(trainData)
 
-    val tm = new ParameterAveragingTrainingMaster.Builder(4, batchSize)
+    val tm = new ParameterAveragingTrainingMaster.Builder(4, BatchSize)
       .averagingFrequency(5)
       .workerPrefetchNumBatches(2)
-      .batchSizePerWorker(batchSize)
+      .batchSizePerWorker(BatchSize)
       .build
 
     val nnConf = configureNetwork()
@@ -113,12 +113,12 @@ class FairytaleCNN {
     sparkNet.setListeners(remoteUIRouter, Collections.singletonList(new StatsListener(null)))
 
     // TODO MultipleEpochIterator
-    for (i <- 0 until epochs) {
+    (0 until Epochs).foreach {
       sparkNet.fit(trainDataSpark)
-      log.info("Completed Epoch {}", i)
+      log.info("Completed Epoch {}", _)
     }
 
-    val testData = prepareReadAndScale(testDataSplit, labelMaker, 200, numLabels)
+    val testData = prepareReadAndScale(testDataSplit, labelMaker, 1000, NumLabels)
     val testDataSpark = sparkContext.parallelize(testData)
 
     val labels = trainData.head.getLabelNamesList
@@ -133,7 +133,7 @@ class FairytaleCNN {
                                   batchSize: Int,
                                   numLabels: Int): ArrayBuffer[DataSet] = {
     // define default reader and scaler for both sets
-    val recordReader = new ImageRecordReader(imgHeight, imgWidth, imgChannels, labelMaker)
+    val recordReader = new ImageRecordReader(ImgHeight, ImgWidth, ImgChannels, labelMaker)
     val scaler = new ImagePreProcessingScaler(0, 1)
 
     recordReader.initialize(data, null)
@@ -154,8 +154,8 @@ class FairytaleCNN {
 
   private def configureNetwork(): MultiLayerNetwork = {
     val conf: MultiLayerConfiguration = new NeuralNetConfiguration.Builder()
-      .seed(seed)
-      .iterations(10)
+      .seed(Seed)
+      .iterations(Iterations)
       .regularization(true)
       .l2(0.0001)
       .activation(Activation.RELU)
@@ -169,7 +169,7 @@ class FairytaleCNN {
         new ConvolutionLayer.Builder()
           .kernelSize(5, 5)
           .name("cnn-init")
-          .nIn(imgChannels)
+          .nIn(ImgChannels)
           .nOut(30)
           .activation(Activation.RELU)
           .biasInit(0)
@@ -204,12 +204,12 @@ class FairytaleCNN {
       .layer(6,
         new OutputLayer.Builder(
           LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY)
-          .nOut(numLabels)
+          .nOut(NumLabels)
           .activation(Activation.SOFTMAX)
           .build())
       .backprop(true)
       .pretrain(false)
-      .setInputType(InputType.convolutional(imgHeight, imgWidth, imgChannels))
+      .setInputType(InputType.convolutional(ImgHeight, ImgWidth, ImgChannels))
       .build()
     new MultiLayerNetwork(conf)
   }
