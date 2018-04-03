@@ -19,7 +19,8 @@ object Dependencies {
   val datavecSpark = "org.datavec" %% "datavec-spark" % dl4jVerSpark
   val nd4jNativePlatform = "org.nd4j" % "nd4j-native-platform" % dl4jVer
   val nd4jKryo = "org.nd4j" %% "nd4j-kryo" % dl4jVer
-  val dl4jUI = "org.deeplearning4j" % "deeplearning4j-ui-model" % dl4jVer
+  val dl4jUIModel = "org.deeplearning4j" % "deeplearning4j-ui-model" % dl4jVer
+  val dl4jUI = "org.deeplearning4j" %% "deeplearning4j-ui" % dl4jVer
 
   val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.1"
   val jacksonModuleScala = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.1"
