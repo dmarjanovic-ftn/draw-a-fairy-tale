@@ -25,7 +25,7 @@ class ImageProcessing(object):
         try:
             rmtree(self._processed)
         except OSError:
-            continue
+            pass
 
         dirs = ['/processed', '/test', '/train', '/k-fold']
         for leaf in self._class_names:
