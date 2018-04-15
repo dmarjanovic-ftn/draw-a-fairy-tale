@@ -7,18 +7,16 @@ final case class DrawingDF(features: Vector, label: Int)
 object DrawingDF {
 
   val Labels: Seq[String] = Seq(
-    "aircraft_carrier",
-    "airplane",
-    "alarm_clock",
-    "ambulance",
-    "angel",
-    "animal_migration",
-    "ant",
-    "anvil",
-    "apple",
-    "arm",
-    "asparagus",
-    "axe"
+    "cello",
+    "clarinet",
+    "drums",
+    "guitar",
+    "harp",
+    "piano",
+    "saxophone",
+    "trombone",
+    "trumpet",
+    "violin"
   )
 
   def wordToLabel(word: String): Int = Labels.indexOf(word.toLowerCase)

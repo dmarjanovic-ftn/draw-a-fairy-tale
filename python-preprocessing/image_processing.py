@@ -3,13 +3,13 @@ from os import makedirs
 from shutil import rmtree
 
 import numpy as np
-from scipy.misc import imsave
 
 from utils import get_file_names_from_directory, to_bitmap
+import imageio
 
 
 class ImageProcessing(object):
-    def __init__(self, data_path='quick_draw_data', processed='data', max_class_data=10000,
+    def __init__(self, class_names, data_path='quick_draw_data', processed='data', max_class_data=10000,
                  generate_images=False, train_data=8000, binarized=False, init_dirs=False):
         self.max_class_data = max_class_data
         self.train_data = train_data
@@ -17,12 +17,21 @@ class ImageProcessing(object):
         self._processed = processed
         self._generate_images = generate_images
         self._binarized = binarized
+        self._class_names = class_names
         if init_dirs:
             self.init_data_dirs()
 
     def init_data_dirs(self):
-        rmtree(self._processed)
-        for leaf_dir in ['/processed', '/test', '/train', '/k-fold']:
+        try:
+            rmtree(self._processed)
+        except OSError:
+            pass
+
+        dirs = ['/processed', '/test', '/train', '/k-fold']
+        for leaf in self._class_names:
+            dirs.append('/train/' + leaf)
+
+        for leaf_dir in dirs:
             makedirs(self._processed + leaf_dir)
 
     def get_files(self):
@@ -35,14 +44,13 @@ class ImageProcessing(object):
             print "Can't open " + name + " file!"
             return []
 
-    def save_image(self, name, index, array, is_test=False):
+    def save_image(self, name, index, array, is_test=True):
         if self._generate_images:
             if is_test:
                 save_path = self._processed + '/test/' + name + '_' + str(index) + '.jpg'
             else:
-                save_path = self._processed + '/train/' + name + '_' + str(index) + '.jpg'
-
-            imsave(save_path, ImageProcessing._process_array(array))
+                save_path = self._processed + '/train/'+ name + '/' + name + '_' + str(index) + '.jpg'
+            imageio.imwrite(save_path, ImageProcessing._process_array(array))
         else:
             if self._binarized:
                 pixels = map(lambda _: to_bitmap(_), array.tolist())
